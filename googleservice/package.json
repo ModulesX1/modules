@@ -1,0 +1,14 @@
+{
+  "name": "googleservice",
+  "version": "1.0.0",
+  "description": "google service function",
+  "main": "__init__.js",
+  "keywords": [
+    "googleapis",
+    "firebase",
+    "google",
+    "drive"
+  ],
+  "author": "modulesx1",
+  "license": "MIT"
+}

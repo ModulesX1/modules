@@ -1,0 +1,13 @@
+{
+  "name": "cyberhash",
+  "version": "1.0.0",
+  "description": "js function for hashing messages with cyberhash",
+  "main": "__init__.js",
+  "keywords": [
+    "hash",
+    "crypto",
+    "cyberhash"
+  ],
+  "author": "modulesx1",
+  "license": "MIT"
+}
