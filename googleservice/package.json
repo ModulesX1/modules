@@ -9,6 +9,10 @@
     "google",
     "drive"
   ],
+  "dependencies": {
+      "googleapis": "^122.0.0",
+      "firebase-admin": "^11.10.1"
+  },
   "author": "modulesx1",
   "license": "MIT"
 }

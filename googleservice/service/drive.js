@@ -37,7 +37,7 @@ function GoogleDrive( credential ) {
      * @param { String | [] } filter - The field parameter for the API request.
      * @returns { Promise<Object> } - A promise resolving to the API response.
      */
-	this.upload = function GoogleDriveFileUpload( file, filter ) {
+	this.set = function GoogleDriveFileUpload( file, filter ) {
 	    
 	    const fields = typeof filter === "string" ? filter : ( Array.isArray( filter ) ? filter.join(",") : "*" );
 	    
@@ -72,7 +72,9 @@ function GoogleDrive( credential ) {
 	/**
 	 * Get a file from Google Drive.
 	 * @param { String } fileId - Google drive file id.
-	 * @param { {} } options - Google drive filter options.
+	 * @param { Object } options - Google drive filter options.
+	 * @param { String } [options.fields] - File fields filter.
+	 * @returns { Promise<Object> }
 	 **/
 	this.get = function GoogleDriveFileGet( fileId, options ) {
 	    return new Promise( resolve => {
