@@ -26,9 +26,23 @@ function GoogleDrive( credential ) {
      * @returns { Buffer }
      **/
     const bufferStream = function BufferFileStream( file ) {
+        if ( file instanceof fs.ReadStream ) return file;
         const buffer = new stream.PassThrough();
         buffer.end( Buffer.isBuffer( file ) ? file : file.buffer || file.data );
         return buffer
+    }
+    
+    const driveUserContent = async function GoogleDriveFileContentLink(initialUrl) {
+        try {
+            const response = await fetch( `https://drive.google.com/uc?id=${initialUrl}`, { redirect:'manual' });
+            if ( response.status >= 300 && response.status < 400 ) {
+                return response.headers.get('location');
+            } else {
+                return initialUrl;
+            }
+        } catch(e) {
+            return null;
+        }
     }
 
     /**
@@ -37,35 +51,28 @@ function GoogleDrive( credential ) {
      * @param { String | [] } filter - The field parameter for the API request.
      * @returns { Promise<Object> } - A promise resolving to the API response.
      */
-	this.set = function GoogleDriveFileUpload( file, filter ) {
+	this.create = function GoogleDriveFileUpload( file, filter ) {
 	    
-	    const fields = typeof filter === "string" ? filter : ( Array.isArray( filter ) ? filter.join(",") : "*" );
+	    const fields = typeof filter === "string" ? ( filter.includes("id") ? filter : "id," + filter ) : ( Array.isArray( filter ) ? ( filter.join(",").includes("id") ? filter.join(",") : "id," + filter.join(",") ) : "*" );
 	    
 	    return new Promise( resolve => {
 	        
-	        if ( !file || ( !file.data && !file.buffer ) ) resolve( null );
+	        if ( !file || ( !file.data && !file.buffer && !Buffer.isBuffer( file ) ) ) resolve( null );
 	        
-	        const media = {
-    			mimeType: file.mimetype,
-    			body: bufferStream( file )
-    		};
-    		
     		const resource = {
     			name: Date.now().toString(),
     			parents: ['1-sQEbClcbj6xmywa5XygM3wWfGCWWF69']
     		};
     		
-    		const fileResult = Object.fromEntries(
-    		    Object.entries( file ).filter( ([ key, value ]) => !Buffer.isBuffer( value ) )
-    		);
-    		
-    		GoogleDriveApi.files.create({ resource, media, fields })
+    		GoogleDriveApi.files.create({ resource, media:{ body:bufferStream( file ) }, fields })
     		    .then( response => {
-    		        response.data.fileoriginal = fileResult;
-    		        resolve( response.data )
+    		        driveUserContent( res.data.id )
+    		            .then( link => {
+    		                res.data.webContentLink = link;
+    		                resolve( res.data );
+    		            }).catch( err => resolve( null ) );
     		    })
-    		    .catch( error => resolve( null ) );
-    		
+    		    .catch( err => resolve( null ) );
 	    })
 	}
 	
