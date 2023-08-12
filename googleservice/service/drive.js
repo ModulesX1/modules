@@ -1,7 +1,7 @@
 
 const { google } = require("googleapis");
-const stream = require("stream");
-const fs = require("fs");
+const stream = require("node:stream");
+const fs = require("node:fs");
 
 /** 
  * @param { String | {} } credential - Google service key path or credential object.
@@ -10,15 +10,15 @@ function GoogleDrive( credential ) {
     
     if ( !this ) throw new Error("GoogleDrive must be invoked with the 'new' keyword.");
 
-	credential = typeof credential === "string" ? fs.existsSync( credential ) && require( credential ) : typeof credential === "object" && credential;
+	const credentials = typeof credential === "string" ? fs.existsSync( credential ) && require( credential ) : typeof credential === "object" && credential;
 
-	if ( !credential ) throw new Error("Invalid or missing Google service key. Please provide a valid service key path or credential object.")
+	if ( !credentials ) throw new Error("Invalid or missing Google service key. Please provide a valid service key path or credential object.")
 	
     const auth = new google.auth.GoogleAuth({
 		credentials, scopes: ["https://www.googleapis.com/auth/drive.file","https://www.googleapis.com/auth/drive.resource"]
 	});
 
-	const GoogleDrive = google.drive({ version:'v3', auth });
+	const GoogleDriveApi = google.drive({ version:'v3', auth });
     
     /**
      * 
@@ -27,7 +27,7 @@ function GoogleDrive( credential ) {
      **/
     const bufferStream = function BufferFileStream( file ) {
         const buffer = new stream.PassThrough();
-        buffer.end( file.buffer || file.data );
+        buffer.end( Buffer.isBuffer( file ) ? file : file.buffer || file.data );
         return buffer
     }
 
@@ -59,7 +59,7 @@ function GoogleDrive( credential ) {
     		    Object.entries( file ).filter( ([ key, value ]) => !Buffer.isBuffer( value ) )
     		);
     		
-    		GoogleDrive.files.create({ resource, media, fields })
+    		GoogleDriveApi.files.create({ resource, media, fields })
     		    .then( response => {
     		        response.data.fileoriginal = fileResult;
     		        resolve( response.data )
@@ -80,7 +80,7 @@ function GoogleDrive( credential ) {
 	    return new Promise( resolve => {
 	        const filter = { fileId };
 	        typeof options === "object" && Object.assign( filter, options );
-	        GoogleDrive.files.get( filter )
+	        GoogleDriveApi.files.get( filter )
 	            .then( response => resolve( response.data ) )
 	            .catch( error => resolve(null) )
 	    })
