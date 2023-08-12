@@ -1,4 +1,4 @@
 
-const drive = require("./service/drive");
+const GoogleDrive = require("./service/drive");
 
-module.exports = { drive }
+module.exports = { GoogleDrive }
