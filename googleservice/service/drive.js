@@ -53,7 +53,7 @@ function GoogleDrive( credential ) {
      */
 	this.create = function GoogleDriveFileUpload( file, filter ) {
 	    
-	    const fields = typeof filter === "string" ? ( filter.includes("id") ? filter : "id," + filter ) : ( Array.isArray( filter ) ? ( filter.join(",").includes("id") ? filter.join(",") : "id," + filter.join(",") ) : "*" );
+	    const fields = typeof filter === "string" ? ( filter.includes("id") ? filter : "id," + filter ) : ( Array.isArray( filter ) ? ( filter.join(",").includes("id") ? filter.join(",") : "id," + filter.join(",") ) : "id,name,mimeType,parents,webViewLink,thumbnailLink,createdTime,size,shared" );
 	    
 	    return new Promise( resolve => {
 	        
@@ -66,10 +66,10 @@ function GoogleDrive( credential ) {
     		
     		GoogleDriveApi.files.create({ resource, media:{ body:bufferStream( file ) }, fields })
     		    .then( response => {
-    		        driveUserContent( res.data.id )
+    		        driveUserContent( response.data.id )
     		            .then( link => {
-    		                res.data.webContentLink = link;
-    		                resolve( res.data );
+    		                response.data.webContentLink = link;
+    		                resolve( response.data );
     		            }).catch( err => resolve( null ) );
     		    })
     		    .catch( err => resolve( null ) );
