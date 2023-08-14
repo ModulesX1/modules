@@ -34,7 +34,7 @@ function GoogleDrive( credential ) {
     
     const driveUserContent = async function GoogleDriveFileContentLink(initialUrl) {
         try {
-            const response = await fetch( `https://drive.google.com/uc?id=${initialUrl}`, { redirect:'manual' });
+            const response = await fetch( `https://drive.google.com/uc?id=${initialUrl}`, { method:'HEAD',redirect:'manual' });
             if ( response.status >= 300 && response.status < 400 ) {
                 return response.headers.get('location');
             } else {
