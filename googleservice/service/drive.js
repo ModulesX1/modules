@@ -32,13 +32,14 @@ function GoogleDrive( credential ) {
         return buffer
     }
     
-    const driveUserContent = async function GoogleDriveFileContentLink(initialUrl) {
+    const driveUserContent = async function GoogleDriveFileContentLink( id ) {
         try {
-            const response = await fetch( `https://drive.google.com/uc?id=${initialUrl}`, { method:'HEAD',redirect:'manual' });
+            const GoogleDriveUrl = `https://drive.google.com/uc?id=${ id }`;
+            const response = await fetch( GoogleDriveUrl, { method:'HEAD',redirect:'manual' });
             if ( response.status >= 300 && response.status < 400 ) {
                 return response.headers.get('location');
             } else {
-                return initialUrl;
+                return GoogleDriveUrl;
             }
         } catch(e) {
             return null;
