@@ -56,7 +56,7 @@ function GoogleDrive( credential ) {
 	    
 	    const fields = typeof filter === "string" ? ( filter.includes("id") ? filter : "id," + filter ) : ( Array.isArray( filter ) ? ( filter.join(",").includes("id") ? filter.join(",") : "id," + filter.join(",") ) : "id,name,mimeType,parents,webViewLink,thumbnailLink,createdTime,size,shared" );
 	    
-	    return new Promise( resolve => {
+	    return new Promise( ( resolve, reject ) => {
 	        
 	        if ( !file || ( !file.data && !file.buffer && !Buffer.isBuffer( file ) ) ) resolve( null );
 	        
@@ -73,7 +73,7 @@ function GoogleDrive( credential ) {
     		                resolve( response.data );
     		            }).catch( err => resolve( null ) );
     		    })
-    		    .catch( err => resolve( null ) );
+    		    .catch( reject );
 	    })
 	}
 	
