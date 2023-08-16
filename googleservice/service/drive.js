@@ -82,20 +82,23 @@ function GoogleDrive( credential ) {
 	
 	/**
 	 * Get a file from Google Drive.
-	 * @param { String } fileId - Google drive file id.
-	 * @param { Object } options - Google drive filter options.
-	 * @param { String } [options.fields] - File fields filter.
+	 * @param { Object } filter - Google drive file filter.
+	 * @param { String } [filter.fileId] - Google drive file id.
+	 * @param { "media" } [filter.alt]
+	 * @param { String | String[] } [filter.fields] - File fields filter.
+	 * @param { "json" | "arraybuffer" | "blob" | "stream" | undefined } responseType - Google api response type ( optional ).
 	 * @returns { Promise<Object> }
 	 **/
-	this.get = function GoogleDriveFileGet( fileId, options ) {
-	    return new Promise( resolve => {
-	        const filter = { fileId };
-	        typeof options === "object" && Object.assign( filter, options );
-	        GoogleDriveApi.files.get( filter )
+	this.get = function GoogleDriveFileGet( filter, responseType ) {
+	    return new Promise( ( resolve, reject ) => {
+	        responseType = responseType ? responseType : "json";
+	        GoogleDriveApi.files.get( filter, { responseType } )
 	            .then( response => resolve( response.data ) )
-	            .catch( error => resolve(null) )
+	            .catch( reject )
 	    })
 	}
+	
+	
 	
 }
 
